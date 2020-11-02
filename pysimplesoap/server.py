@@ -368,40 +368,26 @@ class SoapDispatcher(object):
                 for k, v in items:
                     e = all.add_child("xsd:element")
                     e['name'] = k
-                    if type(v) is not dict:
-                        if array:
-                            e[:] = {'minOccurs': "0", 'maxOccurs': "unbounded"}
-                        if v in TYPE_MAP.keys():
-                            t = 'xsd:%s' % TYPE_MAP[v]
-                        elif v is None:
-                            t = 'xsd:anyType'
-                        elif isinstance(v, list):
-                            n = "ArrayOf%s%s" % (name, k)
-                            l = []
-                            for d in v:
-                                if isinstance(d, list):
-                                    l.extend(d.items())
-                                else:
-                                    l.append(d)
-                            parse_element(n, l, array=True, complex=True)
-                            t = "tns:%s" % n
-                        elif isinstance(v, dict):
-                            n = "%s%s" % (name, k)
-                            parse_element(n, v.items(), complex=True)
-                            t = "tns:%s" % n
-                        else:
-                            raise TypeError("unknonw type %s for marshalling" % str(v))
-                        e.add_attribute('type', t)
-                    elif type(v) is dict:
-                        # Restrict the values of an element
-                        st = e.add_child("xsd:simpleType")
-                        rest = st.add_child("xsd:restriction")
-                        rest.add_attribute('base', 'xsd:token')
-                        for value in v[enum.EnumMeta]:
-                            en = rest.add_child("xsd:enumeration")
-                            en.add_attribute('value', value)
+                    if array:
+                        e[:] = {'minOccurs': "0", 'maxOccurs': "unbounded"}
+                    if isinstance(v, dict):
+                        n = "%s%s" % (name, k)
+                        parse_element(n, v.items(), complex=True)
+                        t = "tns:%s" % n
+                    elif isinstance(v, list):
+                        n = "ArrayOf%s%s" % (name, k)
+                        l = []
+                        for d in v:
+                            l.extend(d.items())
+                        parse_element(n, l, array=True, complex=True)
+                        t = "tns:%s" % n
+                    elif v in TYPE_MAP.keys():
+                        t = 'xsd:%s' % TYPE_MAP[v]
+                    elif v is None:
+                        t = 'xsd:anyType'
                     else:
-                        raise TypeError("Unknow type %s for marshalling" % str(v))
+                        raise TypeError("unknown type %s for marshalling" % str(v))
+                    e.add_attribute('type', t)
 
             parse_element("%s" % method, args and args.items())
             parse_element("%sResponse" % method, returns and returns.items())
