@@ -24,6 +24,7 @@ import os
 import logging
 import hashlib
 import warnings
+import enum
 
 try:
     import urllib2
@@ -549,6 +550,7 @@ Date = datetime.date
 Time = datetime.time
 duration = Alias(str, 'duration')
 any_uri = Alias(str, 'anyURI')
+enum.EnumMeta = Alias(enum.EnumMeta, 'token')
 
 # Define conversion function (python type): xml schema type
 TYPE_MAP = {
@@ -567,6 +569,7 @@ TYPE_MAP = {
     datetime.time: 'time',
     duration: 'duration',
     any_uri: 'anyURI',
+    enum.EnumMeta: 'token',
 }
 TYPE_MARSHAL_FN = {
     datetime.datetime: datetime_m,
