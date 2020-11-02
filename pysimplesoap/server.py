@@ -379,8 +379,10 @@ class SoapDispatcher(object):
                             n = "ArrayOf%s%s" % (name, k)
                             l = []
                             for d in v:
-                                # l.extend(d.items())
-                                l.extend(d)
+                                if isinstance(d, list):
+                                    l.extend(d.items())
+                                else:
+                                    l.append(d)
                             parse_element(n, l, array=True, complex=True)
                             t = "tns:%s" % n
                         elif isinstance(v, dict):
